@@ -4,7 +4,7 @@
 
 **Fuzzy-grab any URL, path, or word off the screen and paste it, pure shell, no Python.**
 
-[![Tests](https://github.com/gufranco/tmux-extract-revamped/actions/workflows/tests.yml/badge.svg)](https://github.com/gufranco/tmux-extract-revamped/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
+[![Tests](https://github.com/tmux-revamped/tmux-extract-revamped/actions/workflows/tests.yml/badge.svg)](https://github.com/tmux-revamped/tmux-extract-revamped/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
 
 </div>
 
@@ -12,7 +12,7 @@
 
 Press one key, fuzzy-search everything on screen, and the choice lands at your cursor. It captures the pane, pulls out URLs, file paths, words, or whole lines, and shows them in an fzf popup. Unlike extrakto, the extraction is **pure shell**, no Python runtime to install or keep working.
 
-Built from [tmux-plugin-template](https://github.com/gufranco/tmux-plugin-template).
+Built from [tmux-plugin-template](https://github.com/tmux-revamped/tmux-plugin-template).
 
 <table>
 <tr>
@@ -44,7 +44,7 @@ Press `prefix + Tab` to open the picker over the current pane. Type to filter, `
 With [TPM](https://github.com/tmux-plugins/tpm), add to `~/.tmux.conf`:
 
 ```tmux
-set -g @plugin 'gufranco/tmux-extract-revamped'
+set -g @plugin 'tmux-revamped/tmux-extract-revamped'
 ```
 
 Press `prefix + I`. Requires [fzf](https://github.com/junegunn/fzf) on the path.
