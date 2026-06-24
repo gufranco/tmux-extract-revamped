@@ -4,7 +4,7 @@
 
 **Fuzzy-grab any URL, path, or word off the screen and paste it, pure shell, no Python.**
 
-[![Tests](https://github.com/gufranco/tmux-extract-revamped/actions/workflows/tests.yml/badge.svg)](https://github.com/gufranco/tmux-extract-revamped/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests](https://github.com/gufranco/tmux-extract-revamped/actions/workflows/tests.yml/badge.svg)](https://github.com/gufranco/tmux-extract-revamped/actions/workflows/tests.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
 
 </div>
 
