@@ -39,6 +39,100 @@ teardown() {
   [[ "${lines[1]}" == "world" ]]
 }
 
+@test "extract_shas pulls a hex object name and skips plain decimals" {
+  run extract_shas "commit 9af2b1cdef on build 1234567 ok"
+  [[ "${output}" == *"9af2b1cdef"* ]]
+  [[ "${output}" != *"1234567"* ]]
+}
+
+@test "extract_shas de-duplicates repeated shas" {
+  run extract_shas $'abcdef1 then\nabcdef1 again'
+  [[ "${output}" == "abcdef1" ]]
+}
+
+@test "extract_ipv4 keeps valid octets and drops out-of-range ones" {
+  run extract_ipv4 "host 192.168.1.10 bad 256.1.1.1 done"
+  [[ "${output}" == *"192.168.1.10"* ]]
+  [[ "${output}" != *"256.1.1.1"* ]]
+}
+
+@test "extract_ipv6 matches full and compressed forms but not a clock" {
+  run extract_ipv6 "addr fe80::1ff:fe23:4567:890a full 2001:db8:0:0:0:0:0:1 time 12:34:56"
+  [[ "${output}" == *"fe80::1ff:fe23:4567:890a"* ]]
+  [[ "${output}" == *"2001:db8:0:0:0:0:0:1"* ]]
+  [[ "${output}" != *"12:34:56"* ]]
+}
+
+@test "extract_hex_colors keeps the longest form first" {
+  run extract_hex_colors "fg #aabbccdd bg #f00 mid #1c1c1c"
+  [[ "${output}" == *"#aabbccdd"* ]]
+  [[ "${output}" == *"#f00"* ]]
+  [[ "${output}" == *"#1c1c1c"* ]]
+}
+
+@test "extract_uuids matches a canonical uuid" {
+  run extract_uuids "id 550e8400-e29b-41d4-a716-446655440000 end"
+  [[ "${output}" == "550e8400-e29b-41d4-a716-446655440000" ]]
+}
+
+@test "extract_numbers pulls integers and decimals" {
+  run extract_numbers "count 42 rate 3.14 neg -7"
+  [[ "${output}" == *"42"* ]]
+  [[ "${output}" == *"3.14"* ]]
+  [[ "${output}" == *"-7"* ]]
+}
+
+@test "extract_quoted strips single, double, and backtick delimiters" {
+  run extract_quoted $'say "hello world" and \'foo\' run `ls -l`'
+  [[ "${output}" == *"hello world"* ]]
+  [[ "${output}" == *"foo"* ]]
+  [[ "${output}" == *"ls -l"* ]]
+}
+
+@test "extract_quoted drops empty quote pairs" {
+  run extract_quoted 'empty "" here'
+  [[ -z "${output}" ]]
+}
+
+@test "extract_bracketed strips paren, square, brace, and angle pairs" {
+  run extract_bracketed "f(arg) a[0] {k:v} <tag>"
+  [[ "${output}" == *"arg"* ]]
+  [[ "${output}" == *"0"* ]]
+  [[ "${output}" == *"k:v"* ]]
+  [[ "${output}" == *"tag"* ]]
+}
+
+@test "extract_custom matches an arbitrary regex" {
+  run extract_custom 'TODO-[0-9]+' "see TODO-12 and TODO-99 now"
+  [[ "${output}" == *"TODO-12"* ]]
+  [[ "${output}" == *"TODO-99"* ]]
+}
+
+@test "extract_custom yields nothing for an empty regex" {
+  run extract_custom "" "anything at all"
+  [[ -z "${output}" ]]
+}
+
+@test "extract_min_length drops short candidates" {
+  run extract_min_length 2 $'a\nbb\nccc'
+  [[ "${output}" != *$'\na'* ]]
+  [[ "${lines[0]}" == "bb" ]]
+  [[ "${lines[1]}" == "ccc" ]]
+}
+
+@test "extract_min_length treats a non-numeric minimum as zero" {
+  run extract_min_length "x" $'a\nbb'
+  [[ "${lines[0]}" == "a" ]]
+  [[ "${lines[1]}" == "bb" ]]
+}
+
+@test "extract_reverse flips the line order" {
+  run extract_reverse $'a\nb\nc'
+  [[ "${lines[0]}" == "c" ]]
+  [[ "${lines[1]}" == "b" ]]
+  [[ "${lines[2]}" == "a" ]]
+}
+
 @test "extract_all combines extractors and de-duplicates across them" {
   run extract_all "https://a.com /path/x word"
   [[ "${output}" == *"https://a.com"* ]]

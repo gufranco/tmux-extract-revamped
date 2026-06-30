@@ -24,9 +24,29 @@ height="$(get_opt "@extract_revamped_popup_height" "60%")"
 
 tmux bind-key "${key}" display-popup -E -w "${width}" -h "${height}" "${EXTRACT_CMD} ${mode} '#{pane_id}'"
 
-# Optional navigate key: instead of pasting the choice, jump to it in copy-mode
-# so you can read it in context. Opt-in to avoid claiming a second key by default.
-nav_key="$(get_opt "@extract_revamped_navigate_key" "")"
-if [[ -n "${nav_key}" ]]; then
-  tmux bind-key "${nav_key}" display-popup -E -w "${width}" -h "${height}" "${EXTRACT_CMD} ${mode} '#{pane_id}' navigate"
+# Optional action keys. Each is opt-in so the plugin claims only one key by
+# default. They reuse the same dispatcher with a different action argument.
+bind_action() {
+  local opt="${1}" action="${2}" k
+  k="$(get_opt "${opt}" "")"
+  if [[ -n "${k}" ]]; then
+    tmux bind-key "${k}" display-popup -E -w "${width}" -h "${height}" \
+      "${EXTRACT_CMD} ${mode} '#{pane_id}' ${action}"
+  fi
+}
+
+# Jump to the choice in copy-mode instead of pasting it.
+bind_action "@extract_revamped_navigate_key" "navigate"
+# Open the choice by type: URL to the browser, path to $EDITOR.
+bind_action "@extract_revamped_open_key" "open"
+# Copy the choice to the clipboard (or over SSH via OSC 52 when enabled).
+bind_action "@extract_revamped_copy_key" "copy"
+# In-popup chooser: cycle extractor with ctrl-n, ctrl-o opens, ctrl-y copies.
+bind_action "@extract_revamped_chooser_key" "chooser"
+
+# Doctor: report which optional tools (fzf, opener, clipboard, base64) exist.
+doctor_key="$(get_opt "@extract_revamped_doctor_key" "")"
+if [[ -n "${doctor_key}" ]]; then
+  tmux bind-key "${doctor_key}" display-popup -E -w "${width}" -h "${height}" \
+    "${EXTRACT_CMD} ${mode} '#{pane_id}' doctor; read -r"
 fi
